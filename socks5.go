@@ -137,7 +137,6 @@ func HandleConn(c net.Conn) {
 
 	go doWork(remote, c)
 	doWork(c, remote)
-	//fmt.Printf("conn close\n")
 }
 
 func doWork(dest, src net.Conn) {
@@ -155,24 +154,26 @@ func doWork(dest, src net.Conn) {
 			break
 		}
 	}
-	//fmt.Printf("read addr:%s, write addr:%s\n", dest.RemoteAddr(), src.RemoteAddr())
 }
 
 func connRemote(host string) (c net.Conn, err error) {
-	//fmt.Printf("connect to remote addr: %s\n", host)
 	c, err = net.Dial("tcp", host)
 	return
 }
 
 func init() {
 	flag.IntVar(&listen_port, "port", 9000, "listen port")
+	flag.StringVar(&listen_addr, "addr", "127.0.0.1", "listen address")
 	flag.Parse()
 }
 
-var listen_port int
+var (
+	listen_port int
+	listen_addr string
+)
 
 func main() {
-	host := ":" + strconv.Itoa(listen_port)
+	host := fmt.Sprintf("%s:%d", listen_addr, listen_port)
 	ln, err := net.Listen("tcp", host)
 	if err != nil {
 		fmt.Printf("Listen error: %s\n", err.Error())
