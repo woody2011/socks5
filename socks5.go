@@ -134,6 +134,7 @@ func HandleConn(c net.Conn) {
 		fmt.Printf("connRemote error: %s\n", err.Error())
 		return
 	}
+	defer remote.Close()
 
 	go doWork(remote, c)
 	doWork(c, remote)
