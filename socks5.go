@@ -100,7 +100,7 @@ func parseRequest(c net.Conn) (host string, err error) {
 	case 0x3:
 		host = string(addr[2:2+int(addr[1])]) + ":" + strconv.Itoa(port)
 	case 0x4:
-		host = net.IP(addr[1:17]).String() + ":" + strconv.Itoa(port)
+		host = "[" + net.IP(addr[1:17]).String() + "]" + ":" + strconv.Itoa(port)
 	}
 	return
 }
