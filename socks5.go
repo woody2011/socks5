@@ -79,7 +79,7 @@ func parseRequest(c net.Conn) (host string, err error) {
 	case 0x1:
 		reqlen = 4 + 4 + 2
 	case 0x3:
-		reqlen = 4 + int(buf[4]) + 2
+		reqlen = 4 + 1 + int(buf[4]) + 2
 	case 0x4:
 		reqlen = 4 + 16 + 2
 	default:
@@ -98,9 +98,9 @@ func parseRequest(c net.Conn) (host string, err error) {
 	case 0x1:
 		host = net.IPv4(addr[1], addr[2], addr[3], addr[4]).String() + ":" + strconv.Itoa(port)
 	case 0x3:
-		host = string(addr[2:int(addr[1])]) + ":" + strconv.Itoa(port)
+		host = string(addr[2:2+int(addr[1])]) + ":" + strconv.Itoa(port)
 	case 0x4:
-		host = net.IP(addr[1:17]).String() + ":" + strconv.Itoa(port)
+		host = "[" + net.IP(addr[1:17]).String() + "]" + ":" + strconv.Itoa(port)
 	}
 	return
 }
@@ -134,6 +134,7 @@ func HandleConn(c net.Conn) {
 		fmt.Printf("connRemote error: %s\n", err.Error())
 		return
 	}
+	defer remote.Close()
 
 	go doWork(remote, c)
 	doWork(c, remote)
